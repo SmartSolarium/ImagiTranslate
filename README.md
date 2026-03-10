@@ -1,74 +1,86 @@
-# ImagiTranslate (Image Translator)
+# 🌐 ImagiTranslate
 
-This application translates text within images while faithfully preserving the original layout, colors, typography, and backgrounds.
+![ImagiTranslate](https://img.shields.io/badge/Gemini_3.1-Flash_Image-blue?style=for-the-badge&logo=google) ![Python](https://img.shields.io/badge/Python-3.9%2B-green?style=for-the-badge&logo=python) ![Flask](https://img.shields.io/badge/Flask-Web_App-black?style=for-the-badge&logo=flask)
 
-It leverages the new **Gemini 3.1 Flash Image Preview** model (also known as *Nano Banana 2*).
+**ImagiTranslate** is an advanced application that translates text within images while faithfully preserving the original layout, colors, typography, and backgrounds.
 
-## Requirements
-
-- **Python 3.9+** (or higher)
-- **Gemini API Key**: You need a valid API key with access to the Gemini 3.1 Flash Image Preview model.
-
-1. Install the required libraries:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-2. *(Optional)* Set your Gemini API Key as an environment variable (mostly useful for CLI usage):
-   ```bash
-   export GEMINI_API_KEY="your_api_key_here"
-   ```
-
-## 🌐 Web Interface (Recommended)
-
-The easiest and most interactive way to use ImagiTranslate is through its modern, glassmorphism-styled web app.
-It allows you to upload an image, select the source/target languages, and securely input your Gemini API Key directly from the browser.
-
-To start the web application:
-```bash
-python app.py
-```
-Then, open your web browser and navigate to: **`http://localhost:5000`**
-
-**Features of the Web App:**
-- Simple drag-and-drop or click-to-upload interface.
-- Instant visual feedback and side-by-side comparison of original and translated images.
-- No need to save your API Key in the code; you can input it securely during the session.
+Powered by the **Gemini 3.1 Flash Image Preview** model (also known as *Nano Banana 2*), it seamlessly replaces the original text with the translated text as if the image were natively created in the target language.
 
 ---
 
-## 💻 CLI Usage (Batch Processing)
+## ✨ Features
 
-If you prefer the command line or need to process multiple images at once, you can use the CLI script. 
-By default, the script looks for images in an `input` folder and saves the translated versions in an `output` folder (creating them if they don't exist).
+- **Layout Preservation:** Maintains fonts, colors, and the original visual hierarchy.
+- **Modern Web Interface:** A sleek, glassmorphism-styled Web UI for quick, single-image translations.
+- **Batch Processing CLI:** Command-line tool for translating entire folders of images at once.
+- **Secure:** Your Gemini API key is required but never hardcoded. You can input it safely via the UI.
+- **Supported Formats:** `.jpg`, `.jpeg`, `.png`, and `.webp`.
 
-### Basic Command
+---
 
-Translate all images in `./input` to English:
+## 🚀 Getting Started
+
+### 1. Requirements
+
+- Python 3.9 or higher.
+- A **Gemini API Key** with access to the `gemini-3.1-flash-image-preview` model.
+
+### 2. Installation
+
+Clone the repository and install the dependencies:
 
 ```bash
-python image_translator.py -t "English"
+git clone https://github.com/SmartSolarium/ImagiTranslate.git
+cd ImagiTranslate
+pip install -r requirements.txt
 ```
 
-### Advanced Options
+---
 
-You can customize the folders and languages specifying the appropriate flags:
+## 🖥️ Usage: Web Application (Recommended)
 
-- `-i`, `--input`: Path to the folder containing the source images.
-- `-o`, `--output`: Path to the folder to save the translated images.
-- `-s`, `--source-lang`: Source language (default: "auto-detect")
-- `-t`, `--target-lang`: Target language (required, e.g., "English", "Italiano", "Spanish").
+The easiest and most interactive way to use ImagiTranslate is through its web interface.
+
+1. Start the Flask server:
+   ```bash
+   python app.py
+   ```
+2. Open your browser and navigate to: **`http://localhost:5000`**
+3. **Upload an image**, select your languages, securely paste your **Gemini API Key**, and click "Translate"!
+
+---
+
+## 💻 Usage: Command Line (Batch Processing)
+
+For processing multiple files simultaneously, you can use the CLI script.
+
+1. *(Optional)* Set your API key as an environment variable to avoid entering it every time:
+   ```bash
+   export GEMINI_API_KEY="your_api_key_here"
+   ```
+2. Place your source images in an `input/` folder.
+3. Run the script specifying the target language (e.g., Italian):
+   ```bash
+   python image_translator.py --target-lang "Italiano"
+   ```
+4. The translated images will be saved in the `output/` folder.
+
+#### CLI Options:
+| Flag | Name | Description | Default |
+|---|---|---|---|
+| `-i` | `--input` | Folder containing source images | `./input` |
+| `-o` | `--output` | Folder to save translated images | `./output` |
+| `-s` | `--source-lang` | Source language (e.g., "English") | `auto-detect` |
+| `-t` | `--target-lang` | Target language (e.g., "French") | **Required** |
 
 **Example:**
-
 ```bash
-python image_translator.py --input ./original_images --output ./translated_images --source-lang "English" --target-lang "French"
+python image_translator.py -i ./my_images -o ./translated -s "English" -t "Spanish"
 ```
 
-## Supported Formats
+---
 
-Both the Web App and the CLI script process `.jpg`, `.jpeg`, `.png`, and `.webp` files.
+## ⚠️ Notes & Limitations
 
-## Note
-
-Since Gemini 3.1 Flash Image is an advanced model for visual generation/editing, speed and quality depend on your region and the input image type. The model will accurately translate the text while visually recreating the original layout!
+- As an advanced visual generation model, **translation speed and output quality depend heavily on the complexity of the image** and current server loads.
+- The model aims to achieve identical layouts, but very complex graphical text or low-resolution inputs may yield varying results.
