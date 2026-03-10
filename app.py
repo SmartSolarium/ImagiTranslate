@@ -64,14 +64,31 @@ def translate_image():
             "The output should look identical to the original image but with the text translated."
         )
         
-        # Chiamata API Gemini via generate_content (modello multimodale supporta immagini come input)
-        response = client.models.generate_content(
-            model='gemini-3.1-flash-image-preview',
-            contents=[base_image, prompt]
-        )
-
-        if not response.candidates or not response.candidates[0].content.parts:
-            return jsonify({"error": "Modello Gemini: Nessuna risposta restituita."}), 500
+        # Chiamata API Gemini via generate_content (con sistema di retry)
+        max_retries = 3
+        retry_delay = 2 # secondi
+        response = None
+        
+        import time
+        for attempt in range(max_retries):
+            try:
+                response = client.models.generate_content(
+                    model='gemini-3.1-flash-image-preview',
+                    contents=[base_image, prompt]
+                )
+                
+                if response and response.candidates and response.candidates[0].content.parts:
+                    break # Successo, esce dal loop di retry
+                else:
+                    raise Exception("Risposta vuota o non valida dal modello")
+                    
+            except Exception as e:
+                print(f"Tentativo {attempt + 1}/{max_retries} fallito: {e}")
+                if attempt < max_retries - 1:
+                    time.sleep(retry_delay)
+                    retry_delay *= 2 # Exponential backoff
+                else:
+                    return jsonify({"error": f"Modello Gemini: Elaborazione fallita dopo {max_retries} tentativi. Errore: {e}"}), 500
 
         # Prende l'immagine tradotta
         part = response.candidates[0].content.parts[0]

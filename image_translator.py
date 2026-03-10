@@ -57,15 +57,30 @@ def translate_images(input_dir: str, output_dir: str, source_lang: str, target_l
             # Apriamo l'immagine base (da tradurre)
             base_image = Image.open(img_file)
             
-            # Chiamata al modello Gemini 3.1 Flash Image via generate_content
-            # L'SDK 'google-genai' multimodale prende testo e immagine in input
-            response = client.models.generate_content(
-                model='gemini-3.1-flash-image-preview',
-                contents=[base_image, prompt]
-            )
+            # Chiamata al modello con sistema di Retry
+            max_retries = 3
+            retry_delay = 2 # secondi
+            response = None
             
-            # Salvataggio del risultato
-            if response.candidates and response.candidates[0].content.parts:
+            import time
+            for attempt in range(max_retries):
+                try:
+                    response = client.models.generate_content(
+                        model='gemini-3.1-flash-image-preview',
+                        contents=[base_image, prompt]
+                    )
+                    if response and response.candidates and response.candidates[0].content.parts:
+                        break # Successo
+                    else:
+                        raise Exception("Risposta vuota o non valida")
+                except Exception as e:
+                    print(f"    [!] Tentativo {attempt + 1}/{max_retries} fallito per {img_file.name}: {e}")
+                    if attempt < max_retries - 1:
+                        print(f"    [*] Nuovo tentativo tra {retry_delay} secondi...")
+                        time.sleep(retry_delay)
+                        retry_delay *= 2 # Exponential backoff
+                    else:
+                        print(f"    [-] Errore irreversibile dopo {max_retries} tentativi per {img_file.name}.")
                 out_file_path = output_path / img_file.name
                 
                 # Ottiene l'immagine tradotta
